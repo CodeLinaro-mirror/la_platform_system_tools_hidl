@@ -25,11 +25,25 @@ hidl_flags = [
     "-Werror",
 ]
 
+// This configuration is inherited by all hidl-gen-generated modules.
+cc_defaults {
+    name: "hidl-module-defaults",
+    product_variables: {
+        debuggable: {
+            cflags: ["-D__ANDROID_DEBUGGABLE__"]
+        },
+        treble: {
+            cflags: ["-D__ANDROID_TREBLE__"]
+        },
+    },
+}
+
 //
 // libhidl-gen-hash
 //
-cc_library_host_shared {
+cc_library_shared {
     name: "libhidl-gen-hash",
+    host_supported: true,
     cflags: hidl_flags,
     srcs: ["Hash.cpp"],
     local_include_dirs: ["include_hash/hidl-hash"],
