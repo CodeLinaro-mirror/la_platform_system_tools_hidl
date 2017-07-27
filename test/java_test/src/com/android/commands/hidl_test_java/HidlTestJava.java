@@ -28,6 +28,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 public final class HidlTestJava {
     private static final String TAG = "HidlTestJava";
@@ -37,6 +38,7 @@ public final class HidlTestJava {
         try {
             exitCode = new HidlTestJava().run(args);
         } catch (Exception e) {
+            e.printStackTrace();
             Log.e(TAG, "Error ", e);
         }
         System.exit(exitCode);
@@ -49,6 +51,7 @@ public final class HidlTestJava {
             server();
         } else {
             Log.e(TAG, "Usage: HidlTestJava  -c(lient) | -s(erver)");
+            System.err.printf("Usage: HidlTestJava  -c(lient) | -s(erver)\n");
             return 1;
         }
 
@@ -233,6 +236,14 @@ public final class HidlTestJava {
                      new ArrayList[]{new ArrayList(Arrays.asList(1,2)),
                                      new ArrayList(Arrays.asList(3,4))});
 
+        {
+            // Test proper exceptions are thrown
+            try {
+                IBase proxy = IBase.getService("this-doesn't-exist");
+            } catch (Exception e) {
+                ExpectTrue(e instanceof NoSuchElementException);
+            }
+        }
 
         {
             // Test access through base interface binder.
