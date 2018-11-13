@@ -674,6 +674,7 @@ static status_t generateAndroidBpImplForPackage(Formatter& out, const FQName& pa
         ast->getImportedPackages(&importedPackages);
     }
 
+    out << "// FIXME: your file license if you have one\n\n";
     out << "cc_library_shared {\n";
     out.indent([&] {
         out << "// FIXME: this should only be -impl for a passthrough hal.\n"
@@ -1167,6 +1168,21 @@ static const std::vector<OutputHandler> kFormats = {
                 generateHashOutput,
             },
         }
+    },
+    {
+        "dependencies",
+        "Prints all depended types.",
+        OutputMode::NOT_NEEDED,
+        Coordinator::Location::STANDARD_OUT,
+        GenerationGranularity::PER_FILE,
+        validateForSource,
+        {
+            {
+                FileGenerator::alwaysGenerate,
+                nullptr /* file name for fqName */,
+                astGenerationFunction(&AST::generateDependencies),
+            },
+        },
     },
 };
 // clang-format on

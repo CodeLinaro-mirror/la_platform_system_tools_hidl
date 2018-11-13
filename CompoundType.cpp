@@ -620,7 +620,7 @@ void CompoundType::emitSafeUnionTypeDeclarations(Formatter& out) const {
             << field->type().getCppArgumentType()
             << ");\n";
 
-        if (!field->type().isScalar()) {
+        if (field->type().resolveToScalarType() == nullptr) {
             // Setter (move)
             out << "void "
                 << field->name()
@@ -800,6 +800,27 @@ void CompoundType::emitPackageTypeDeclarations(Formatter& out) const {
     out << "static inline std::string toString("
         << getCppArgumentType()
         << (mFields->empty() ? "" : " o")
+        << ");\n";
+
+    if (canCheckEquality()) {
+        out << "static inline bool operator==("
+            << getCppArgumentType() << " lhs, " << getCppArgumentType() << " rhs);\n";
+
+        out << "static inline bool operator!=("
+            << getCppArgumentType() << " lhs, " << getCppArgumentType() << " rhs);\n";
+    } else {
+        out << "// operator== and operator!= are not generated for " << localName() << "\n";
+    }
+
+    out.endl();
+}
+
+void CompoundType::emitPackageTypeHeaderDefinitions(Formatter& out) const {
+    Scope::emitPackageTypeHeaderDefinitions(out);
+
+    out << "static inline std::string toString("
+        << getCppArgumentType()
+        << (mFields->empty() ? "" : " o")
         << ") ";
 
     out.block([&] {
@@ -915,7 +936,7 @@ void CompoundType::emitPackageTypeDeclarations(Formatter& out) const {
         }).endl().endl();
 
         out << "static inline bool operator!=("
-            << getCppArgumentType() << " lhs," << getCppArgumentType() << " rhs)";
+            << getCppArgumentType() << " lhs, " << getCppArgumentType() << " rhs)";
         out.block([&] {
             out << "return !(lhs == rhs);\n";
         }).endl().endl();
@@ -1229,7 +1250,7 @@ void CompoundType::emitSafeUnionTypeDefinitions(Formatter& out) const {
 
         emitSafeUnionSetterDefinition(out, field, "o", false /* usesMoveSemantics */);
 
-        if (!field->type().isScalar()) {
+        if (field->type().resolveToScalarType() == nullptr) {
             // Setter (move)
             out << "void "
                 << fullName()
