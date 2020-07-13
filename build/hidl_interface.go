@@ -427,7 +427,7 @@ This corresponds to the "-r%s:<some path>" option that would be passed into hidl
 
 	shouldGenerateLibrary := !isCorePackage(name.string())
 	// explicitly true if not specified to give early warning to devs
-	shouldGenerateJava := proptools.BoolDefault(i.properties.Gen_java, true)
+	shouldGenerateJava := false
 	shouldGenerateJavaConstants := i.properties.Gen_java_constants
 	shouldGenerateVts := shouldGenerateLibrary && proptools.BoolDefault(i.properties.Gen_vts, true)
 
