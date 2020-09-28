@@ -425,6 +425,13 @@ This corresponds to the "-r%s:<some path>" option that would be passed into hidl
 		return
 	}
 
+	// If certain hidl is defined in hardware/interface/* and is defined as vndk_enable = true
+	// It will be generated as android.hardware.* and copied to vndk-$VER folder.
+	// If item was removed by kaios, bypass the build rule generate.
+	if ishidlRemovedByKaiOS(name.string()) {
+		return
+	}
+
 	shouldGenerateLibrary := !isCorePackage(name.string())
 	// explicitly true if not specified to give early warning to devs
 	shouldGenerateJava := false
@@ -776,6 +783,22 @@ var coreDependencyPackageNames = []string{
 
 func isCorePackage(name string) bool {
 	for _, pkgname := range coreDependencyPackageNames {
+		if strings.HasPrefix(name, pkgname) {
+			return true
+		}
+	}
+	return false
+}
+
+// List of unused hidl that removed by KaiOS for downsize.
+// TODO: Will append more items while applying Bug-105510
+var hidlRemovedByKaiOSList = []string {
+	"android.hardware.neuralnetworks@",
+	"android.hardware.renderscript@",
+}
+
+func ishidlRemovedByKaiOS(name string) bool {
+	for _, pkgname := range hidlRemovedByKaiOSList {
 		if strings.HasPrefix(name, pkgname) {
 			return true
 		}
