@@ -793,8 +793,14 @@ func isCorePackage(name string) bool {
 // List of unused hidl that removed by KaiOS for downsize.
 // TODO: Will append more items while applying Bug-105510
 var hidlRemovedByKaiOSList = []string {
+	"android.hardware.biometrics.fingerprint@",
+	"android.hardware.broadcastradio@",
+	"android.hardware.contexthub@",
+	"android.hardware.ir@",
 	"android.hardware.neuralnetworks@",
 	"android.hardware.renderscript@",
+	"android.hardware.tv",
+	"android.hardware.vr",
 }
 
 func ishidlRemovedByKaiOS(name string) bool {
